@@ -1,0 +1,14 @@
+.react-emoji-picker--wrapper {
+   position: absolute;
+   width: 100%;
+   top: 40px;
+   /* left: 20px; */
+   /* background-color: red; */
+   /* z-index: 10000; */
+}
+.react-emoji-picker {
+  position: relative;
+  display: flex;
+  justify-content: flex-end;
+  /* z-index: 10; */
+}
