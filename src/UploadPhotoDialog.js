@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import PropTypes from 'prop-types';
 import Button from '@mui/material/Button';
 import { styled } from '@mui/material/styles';
@@ -28,6 +28,9 @@ import MicIcon from '@mui/icons-material/Mic';
 import InputEmoji from 'react-input-emoji';
 import { useDropzone } from 'react-dropzone'
 
+import { AllMethodsContext } from './contexts/AllMethodsContext';
+
+// import './styles/homeEmoji.css'
 import './styles/emoji.css'
 import style from './styles/uploadPhotoDialogStyle'
 
@@ -45,7 +48,6 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 
 const BootstrapDialogTitle = (props) => {
     const { children, onClose, ...other } = props;
-
     return (
         <DialogTitle sx={{ m: 0, p: 2 }} {...other}>
             {children}
@@ -74,9 +76,11 @@ BootstrapDialogTitle.propTypes = {
 
 function UploadPhotoDialog(props) {
     const classes = style();
-    const { hidePhotoDialog, uploadedData, displayAddedText,
-        postData, selectedFile, onDrop, accept } = props;
+    const { hidePhotoDialog, uploadedData, selectedFile, onDrop } = useContext(AllMethodsContext);
+
     const [open, setOpen] = useState(true);
+    const [uploadedText, setUploadedText] = useState();
+
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         onDrop,
@@ -84,19 +88,12 @@ function UploadPhotoDialog(props) {
         //     'image/jpeg': []
         // },
     })
-
-    const uploadFile = (e) => {
-        uploadedData(e.target.files[0])
-    }
-    // const autoResizeTextarea = (e) => {
-    //     setHeight(e.target.scrollHeight - 4)
-    // }
     const handlePostData = () => {
-        postData();
+        uploadedData(uploadedText);
         hidePhotoDialog();
     }
-    const addedText = (e) => {
-        displayAddedText(e)
+    const addedText = (event) => {
+        setUploadedText(event);
     }
     return (
         <div>
@@ -120,14 +117,14 @@ function UploadPhotoDialog(props) {
                             </Button>
                         </div>
                     </div>
-                    {/* <div contentEditable='true'> */}
-                    <InputEmoji
-                        value='text'
-                        onChange={addedText}
-                        placeholder="What's on your mind, Farhad?"
-                        borderColor="white"
-                    />
-                    {/* </div> */}
+                    <div className={classes.reactEmojiPickerWrapper}>
+                        <InputEmoji
+                            value='text'
+                            onChange={addedText}
+                            placeholder="What's on your mind, Farhad?"
+                            borderColor="white"
+                        />
+                    </div>
                     <div className={classes.uploadFileContainer}>
                         {
                             !selectedFile ? (
@@ -152,12 +149,6 @@ function UploadPhotoDialog(props) {
                                             }
                                         </div>
                                     </CardContent>
-                                    {/* <label htmlFor="input-file">
-                                        <CardContent className={classes.photoContent}>
-                                            Upload Photo / Video
-                                        <input multiple type="file" name='file' id="input-file" onChange={uploadFile} />
-                                        </CardContent>
-                                    </label> */}
                                 </Card>
                             ) : (
                                     <Card variant="outlined" >
@@ -181,7 +172,7 @@ function UploadPhotoDialog(props) {
                                     <Stack direction="row" spacing={2} alignItems="center">
                                         <PhoneAndroidIcon />
                                         <Typography variant="caption" component="p">
-                                            Add photos and vidoes from your movile device.
+                                            Add photos and vidoes from your mobile device.
                                         </Typography>
                                         <Button variant="contained" color="inherit" size="small"
                                             style={{ marginLeft: '40px' }}>
@@ -228,9 +219,23 @@ function UploadPhotoDialog(props) {
         </div >
     );
 }
-
 export default UploadPhotoDialog;
 
 
 
+/* WHEN DROPZONE LIBRARY IS NOT USED
+// const uploadFile = (e) => {
+    //     uploadedData(e.target.files[0])
+// }
+ { <label htmlFor="input-file">
+    <CardContent className={classes.photoContent}>
+        Upload Photo / Video
+    <input multiple type="file" name='file' id="input-file" onChange={uploadFile} />
+    </CardContent>
+</label> }
+*/
 
+// AUTOREXIZE TEXTAREA
+// const autoResizeTextarea = (e) => {
+//     setHeight(e.target.scrollHeight - 4)
+// }

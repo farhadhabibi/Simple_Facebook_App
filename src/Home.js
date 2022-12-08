@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback, useLayoutEffect } from 'react';
+import React, { useState, useEffect, useCallback, useLayoutEffect, useContext } from 'react';
 import Grid from '@mui/material/Grid';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
@@ -12,155 +12,47 @@ import Divider from '@mui/material/Divider';
 import Avatar from '@mui/material/Avatar';
 import CardMedia from '@mui/material/CardMedia';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import InputEmoji from 'react-input-emoji';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined';
-import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
 import ChatBubbleOutlineRoundedIcon from '@mui/icons-material/ChatBubbleOutlineRounded';
 import ReplyOutlinedIcon from '@mui/icons-material/ReplyOutlined';
-// import { FacebookSelector } from 'react-reactions';
-import FacebookEmoji from "react-facebook-emoji";
 import Popover from '@mui/material/Popover';
-import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
-import Tooltip from '@mui/material/Tooltip';
 
+import uselocalStorageState from './hooks/useLocalStorageState';
+import FacebookEmoji from "react-facebook-emoji";
+import { v4 as uuidv4 } from 'uuid';
 import UploadPhotoDialog from './UploadPhotoDialog';
 import UploadPhotoOptions from './UploadPhotoOptions';
 import GetTimeAndDate from './GetTimeAndDate';
+import PhotoLike from './PhotoLike';
+import PhotoComment from './PhotoComment';
+import './styles/homeEmoji.css'
 import style from './styles/HomeStyle';
 
-function Home() {
-    const baseTime = Date.now();
+import LoginPage from './LoginPage';
+import useAllMethodsState from './hooks/useAllMethodsState';
 
-    const [photoDialogShowing, setPhotoDialogShowing] = useState(false)
-    const [postedImages, setPostedImages] = useState([]);
-    const [selectedFile, setSelectedFile] = useState(null);
-    const [uploadText, setUploadText] = useState(null)
+import { AllMethodsContext } from './contexts/AllMethodsContext';
+
+function Home() {
+    const { postedImages, photoDialogShowing, showPhotoDialog, toggleComment, handleCommentReaction } = useContext(AllMethodsContext);
+
+    // const { selectedFile, anchorEl, open, defaultLikeToggle, onDrop,
+    //     hidePhotoDialog, uploadedData, handlePopoverOpen, handlePopoverClose, handleLikeReaction, displayCommentOptions,
+    //     closeCommentOptions, addComment, deleteComment, toggleEdit,
+    //     editComment } = useAllMethodsState();
+
     const [showMore, setShowMore] = useState({ toggle: false, target: null });
-    const [dataToLocalStorage, setDataToLocalStorage] = useState([]);
-    const [likePopover, setLikePopover] = React.useState(null);
-    const [likeReaction, setLikeReaction] = useState(null)
     const classes = style();
 
-    const blobToFile = async (blobURL, fileName, mimeType, uploadText, postedAt) => {
-        const response = await fetch(blobURL);
-        const blob = await response.blob();
-        return { selectedFile: new File([blob], fileName, { type: mimeType }), uploadText, postedAt }
-    }
-
-    useEffect(() => {
-        const get = JSON.parse(localStorage.getItem('files'));
-        // console.log('get', get)
-        if (get) {
-            (async () => {
-                const result = await Promise.all(
-                    get.map((file) => blobToFile(file.selectedFile, file.fileName,
-                        file.fileType, file.uploadText, file.postedAt))
-                )
-                setPostedImages(result)
-            })()
-        }
-    }, []);
-    const onDrop = useCallback(acceptedFiles => {
-        acceptedFiles.forEach((file) => {
-            setSelectedFile(file)
-        })
-    }, [])
-    const showPhotoDialog = () => {
-        setSelectedFile(null);
-        setPhotoDialogShowing(true)
-    }
-    const hidePhotoDialog = () => {
-        setPhotoDialogShowing(false)
-    }
-    const displayAddedText = (text) => {
-        setUploadText(text)
-    }
-    const postData = () => {
-        const data = {
-            selectedFile,
-            uploadText,
-            postedAt: new Date(baseTime).getTime(),
-        }
-        setPostedImages([...postedImages, data]);
-    }
-    useEffect(() => {
-        const result = postedImages.map((file) => {
-            // if setState iside map/forEach not work properly...
-            // used promise to first change all the files to blob and resolve to return the value
-            return new Promise((resolve, reject) => {
-                try {
-                    const reader = new FileReader();
-                    reader.onload = () => {
-                        const binaryStr = reader.result;
-                        const obj = [
-                            {
-                                ...file, selectedFile: binaryStr, fileName: file.selectedFile.name,
-                                fileType: file.selectedFile.type, postedAt: file.postedAt
-                            }
-                        ]
-                        resolve(obj);
-                    }
-                    reader.readAsDataURL(file.selectedFile);
-                } catch (err) {
-                    console.log(err)
-                }
-            })
-        });
-        // result return array of fullfilled promises
-        Promise.all(
-            result.map((file) => {
-                return file.then((res) => res)
-            })
-        ).then((val) => {
-            setDataToLocalStorage(val.flat())
-        })
-    }, [postedImages]);
-
-    // useDidMountEffect
-    // useLayoutEffect
-    // useRef
-    // useCallback
-
-    const firstUpdate = useRef(true);
-    useEffect(() => {
-        if (firstUpdate.current) {
-            firstUpdate.current = false;
-            return;
-        }
-        // OR below we must declare isFirst out of component
-        // if (isFirst) {
-        //     isFirst = false;
-        //     return;
-        // }
-        const local = localStorage.setItem('files', JSON.stringify(dataToLocalStorage))
-    }, [dataToLocalStorage])
     const showMoreOptions = (event) => {
         setShowMore({ toggle: true, target: event.currentTarget })
     }
     const hideShowMoreOptions = () => {
         setShowMore({ ...showMore, toggle: false })
     }
-    let timer = 0;
-    let time = 0;
-    const handlePopoverOpen = () => {
-        timer = setTimeout(() => {
-            setLikePopover(true)
-        }, 1000)
-        clearTimeout(time);
 
-    };
-    const handlePopoverClose = () => {
-        time = setTimeout(() => {
-            setLikePopover(false)
-        }, 1000)
-        clearTimeout(timer);
-    };
-    const handleLikeReaction = (e) => {
-        console.log('e', e.currentTarget.dataset.name)
-        setLikeReaction(e.currentTarget.dataset.name)
-    }
     const images = postedImages.map((file, index) => {
         return (
             file.selectedFile ? (
@@ -182,7 +74,7 @@ function Home() {
                         />
                         <CardContent className={classes.addedTextContainer}>
                             <Typography>
-                                {file.uploadText}
+                                {file.uploadedText}
                             </Typography>
                         </CardContent>
                         <Divider />
@@ -196,98 +88,55 @@ function Home() {
                         />
                         <div className={classes.userActionContainer}>
                             <div className={classes.userActionPerformed}>
-                                <Typography variant='body' component="span">
-                                    Imojies &nbsp;You and 423 others
-                                </Typography>
-                                <Typography variant="body" component="span">
-                                    6 Comments &nbsp;8 Share
-                                </Typography>
+                                <Box>
+                                    <Typography variant='body' component="span">
+                                        {
+                                            file.likes.map((like) => {
+                                                if (like.isTrue)
+                                                    return <FacebookEmoji key={like.id} type={like.title} size='xxs' />
+
+                                            })
+                                        }
+                                        &nbsp;
+                                    </Typography>
+                                    <Typography variant='body' component="span">
+                                        {
+                                            file.likes.map((like) => {
+                                                if (like.isTrue) return like.count
+                                            })
+                                        }
+                                    </Typography>
+                                </Box>
+                                <Box>
+                                    <Typography variant="body" component="span" className={classes.commentCounts}
+                                        data-id={file.id} onClick={toggleComment}>
+                                        {file.comments.length} Comments
+                                     </Typography>
+                                    <Typography variant="body" component="span">
+                                        &nbsp; 8 Share
+                                    </Typography>
+                                </Box>
                             </div>
                             <Divider />
-                            <div className={classes.userActions} onMouseLeave={handlePopoverClose}>
-                                <div onMouseEnter={handlePopoverOpen}>
-                                    {likePopover &&
-                                        <Paper variant='oulined' className={classes.likeReactionContainer}>
-                                            <Box className={classes.likeReaction} data-name='Like' onClick={handleLikeReaction}>
-                                                <Tooltip title="Like" placement="top">
-                                                    <span><FacebookEmoji type='like' size='sm' /></span>
-                                                </Tooltip>
-                                            </Box>
-                                            <Box className={classes.likeReaction} data-name='Love' onClick={handleLikeReaction}>
-                                                <Tooltip title="Love" placement="top">
-                                                    <span> <FacebookEmoji type='love' size='sm' /></span>
-                                                </Tooltip>
-                                            </Box>
-                                            <Box className={classes.likeReaction} data-name='Care' onClick={handleLikeReaction}>
-                                                <Tooltip title="Care" placement="top">
-                                                    <span> <FacebookEmoji type='yay' size='sm' /></span>
-                                                </Tooltip>
-                                            </Box>
-                                            <Box className={classes.likeReaction} data-name='Haha' onClick={handleLikeReaction}>
-                                                <Tooltip title="Haha" placement="top">
-                                                    <span> <FacebookEmoji type='haha' size='sm' /></span>
-                                                </Tooltip>
-                                            </Box>
-                                            <Box className={classes.likeReaction} data-name='Wow' onClick={handleLikeReaction}>
-                                                <Tooltip title="Wow" placement="top">
-                                                    <span> <FacebookEmoji type='wow' size='sm' /></span>
-                                                </Tooltip>
-                                            </Box>
-                                            <Box className={classes.likeReaction} data-name='Sad' onClick={handleLikeReaction}>
-                                                <Tooltip title="Sad" placement="top">
-                                                    <span> <FacebookEmoji type='sad' size='sm' /></span>
-                                                </Tooltip>
-                                            </Box>
-                                            <Box className={classes.likeReaction} data-name='Angry' onClick={handleLikeReaction}>
-                                                <Tooltip title="Angry" placement="top">
-                                                    <span> <FacebookEmoji type='angry' size='sm' /></span>
-                                                </Tooltip>
-                                            </Box>
-                                        </Paper>
-                                    }
-                                    <IconButton onClick={handleLikeReaction} data-name='Like' >
-                                        <div className={classes.userActionsButton}>
-                                            {
-                                                likeReaction === 'Like' ?
-                                                    (<>
-                                                        <Typography color='primary' variant='span'>&nbsp;{likeReaction}</Typography></>)
-                                                    : likeReaction === 'Love' ?
-                                                        (<><ThumbUpOutlinedIcon className={classes.icon} />
-                                                            <Typography color='red' variant='span'>&nbsp;{likeReaction}</Typography></>)
-                                                        : likeReaction === 'Care' ?
-                                                            (<><ThumbUpOutlinedIcon className={classes.icon} />
-                                                                <Typography color='orange' variant='span'>&nbsp;{likeReaction}</Typography></>)
-                                                            : likeReaction === 'Haha' ?
-                                                                (<><ThumbUpOutlinedIcon className={classes.icon} />
-                                                                    <Typography color='orange' variant='span'>&nbsp;{likeReaction}</Typography></>)
-                                                                : likeReaction === 'Wow' ?
-                                                                    (<><ThumbUpOutlinedIcon className={classes.icon} />
-                                                                        <Typography color='orange' variant='span'>&nbsp;{likeReaction}</Typography></>)
-                                                                    : likeReaction === 'Sad' ?
-                                                                        (<><ThumbUpOutlinedIcon className={classes.icon} />
-                                                                            <Typography color='orange' variant='span'>&nbsp;{likeReaction}</Typography></>)
-                                                                        : likeReaction === 'Angry' ?
-                                                                            (<><ThumbUpOutlinedIcon className={classes.icon} />
-                                                                                <Typography color='#ff784e' variant='span'>&nbsp;{likeReaction}</Typography></>)
-                                                                            : (<><ThumbUpOutlinedIcon className={classes.icon} />
-                                                                                <Typography variant='span'>Like</Typography></>)
-                                            }
-
-                                        </div>
-                                    </IconButton>
-                                </div>
-                                <IconButton>
-                                    <div className={classes.userActionsButton}>
-                                        <ChatBubbleOutlineRoundedIcon className={classes.icon} /> &nbsp;Comment
-                                    </div>
-                                </IconButton>
-                                <IconButton>
-                                    <div className={classes.userActionsButton}>
-                                        <ReplyOutlinedIcon className={classes.icon} /> &nbsp;Share
-                                    </div>
-                                </IconButton>
-                            </div>
                         </div>
+                        <div className={classes.userActions}>
+                            <PhotoLike
+                                file={file}
+                            />
+                            <IconButton data-id={file.id} onClick={handleCommentReaction}>
+                                <div className={classes.userActionsButton}>
+                                    <ChatBubbleOutlineRoundedIcon />&nbsp;Comment
+                                 </div>
+                            </IconButton>
+                            <IconButton>
+                                <div className={classes.userActionsButton}>
+                                    <ReplyOutlinedIcon />&nbsp;Share
+                                </div>
+                            </IconButton>
+                        </div>
+                        <PhotoComment
+                            file={file}
+                        />
                     </Card>
                 </div>
             ) : (
@@ -309,34 +158,51 @@ function Home() {
                             />
                             <CardContent className={classes.addedTextContainer}>
                                 <Typography>
-                                    {file.uploadText}
+                                    {file.uploadedText}
                                 </Typography>
                             </CardContent>
                             <div className={classes.userActionContainer}>
                                 <div className={classes.userActionPerformed}>
-                                    <Typography variant='body' component="span">
-                                        Imojies &nbsp;You and 423 others
-                                </Typography>
-                                    <Typography variant="body" component="span">
-                                        6 Comments &nbsp;8 Share
-                                </Typography>
+                                    <Box>
+                                        <Typography variant='body' component="span">
+                                            Imojies &nbsp;
+                                     </Typography>
+                                        <Typography variant='body' component="span">
+                                            You and 423 others
+                                    </Typography>
+                                    </Box>
+                                    <Box>
+                                        <Typography variant="body" component="span" className={classes.commentCounts}
+                                            data-id={file.id} onClick={toggleComment}>
+                                            {file.comments.length} Comments
+                                     </Typography>
+                                        <Typography variant="body" component="span">
+                                            &nbsp; 8 Share
+                                    </Typography>
+                                    </Box>
                                 </div>
                                 <Divider />
-                                <div className={classes.userActions}>
-                                    <Typography variant='body' component="span">
-                                        <ThumbUpOutlinedIcon style={{ verticalAlign: 'middle' }} /> &nbsp;Like
-                                </Typography>
-                                    <Typography variant="body" component="span">
-                                        <ChatBubbleOutlineRoundedIcon style={{ verticalAlign: 'middle' }} /> &nbsp;Comment
-                                </Typography>
-                                    <Typography variant="body" component="span">
-                                        <ReplyOutlinedIcon style={{ verticalAlign: 'middle' }} /> &nbsp;Share
-                                </Typography>
-                                </div>
                             </div>
+                            <div className={classes.userActions}>
+                                <PhotoLike
+                                    file={file}
+                                />
+                                <IconButton data-id={file.id} onClick={handleCommentReaction}>
+                                    <div className={classes.userActionsButton}>
+                                        <ChatBubbleOutlineRoundedIcon />&nbsp;Comment
+                                        </div>
+                                </IconButton>
+                                <IconButton>
+                                    <div className={classes.userActionsButton}>
+                                        <ReplyOutlinedIcon />&nbsp;Share
+                                        </div>
+                                </IconButton>
+                            </div>
+                            <PhotoComment
+                                file={file}
+                            />
                         </Card>
                     </div>
-
                 )
         )
     })
@@ -369,24 +235,171 @@ function Home() {
                     <p>xs=3</p>
                 </Grid>
             </Grid>
+            {photoDialogShowing && <UploadPhotoDialog />}
             {
-                photoDialogShowing &&
-                <UploadPhotoDialog hidePhotoDialog={hidePhotoDialog}
-                    displayAddedText={displayAddedText}
-                    postData={postData}
-                    selectedFile={selectedFile}
-                    onDrop={onDrop}
-                // accept={"image/*"}
-                />
-            }
-            {
-                showMore.toggle === true &&
-                <UploadPhotoOptions showMore={showMore}
+                showMore.toggle &&
+                <UploadPhotoOptions
+                    showMore={showMore}
                     hideShowMoreOptions={hideShowMoreOptions}
                 />
             }
         </div >
     )
 }
-
 export default Home;
+
+
+{/* English app, 4 include persion, 7 offline may include persion, 8 include persion, 12 offline no persion */ }
+
+// if setState iside map/forEach not work properly...
+
+ /* search1
+    // 1. how to use if else with filter
+    // 2. how to return array with find
+    // 3. how to use some to return value instead of boolean
+    // useDidMountEffect
+    // useLayoutEffect
+    // useRef
+    // useCallback
+ */
+
+// OR below we must declare isFirst out of component
+// if (isFirst) {
+//     isFirst = false;
+//     return;
+// }
+
+
+// 1. work on like count      //  done
+// 2. useref to edit comment  // done
+// 3. create signup and login page
+// 4. bring optimization like tab is inactive when loaded and the things noted in notion.
+// 5. work on multiple images
+// 6. when love clicked and then like should show unlike...
+
+
+// NEW ENHANCEMENT
+// 1. make a new hook for localStorage
+// 2. if possible make new hooks for photo dialog/like/comment menthods which is actually
+//  good practice to have  methods for a specific actions in a new hook (actually component)
+// 3. use reducer for dialog/like/comment menthods hooks.
+
+
+
+
+
+
+// TRANSFERED TO OTHER COMPONENT
+
+    /** PHOTO DIALOG METHODS */
+    // const onDrop = useCallback(acceptedFiles => {
+    //     acceptedFiles.forEach((file) => {
+    //         setSelectedFile(file)
+    //     })
+    // }, [])
+
+    // const showPhotoDialog = () => {
+    //     setSelectedFile(null);
+    //     setPhotoDialogShowing(true)
+    // }
+    // const hidePhotoDialog = () => {
+    //     setPhotoDialogShowing(false)
+    // }
+    // const displayAddedText = (text) => {
+    //     setUploadText(text)
+    // }
+    // const postData = () => {
+    //     const data = {
+    //         id: uuidv4(),
+    //         selectedFile,
+    //         uploadText,
+    //         postedAt: new Date(baseTime).getTime(),
+    //         displayComment: false,
+    //         displayLikePopover: false,
+    //         comments: [],
+    //         likes: [
+    //             { id: uuidv4(), isTrue: false, title: 'like', count: 0 },
+    //             { id: uuidv4(), isTrue: false, title: 'love', count: 0 },
+    //             { id: uuidv4(), isTrue: false, title: 'yay', count: 0 },
+    //             { id: uuidv4(), isTrue: false, title: 'haha', count: 0 },
+    //             { id: uuidv4(), isTrue: false, title: 'wow', count: 0 },
+    //             { id: uuidv4(), isTrue: false, title: 'sad', count: 0 },
+    //             { id: uuidv4(), isTrue: false, title: 'angry', count: 0 }
+    //         ]
+    //     }
+    //     setPostedImages([...postedImages, data]);
+    // }
+
+
+
+      /** PHOTO COMMENT METHODS */
+    // const displayCommentOptions = (event, commentId) => {
+    //     setCommentId(commentId)
+    //     setAnchorEl(event.currentTarget);
+    // };
+    // const closeCommentOptions = () => {
+    //     setAnchorEl(false);
+    // };
+    // const toggleComment = (e) => {
+    //     const id = e.currentTarget.dataset.id;
+    //     const updatedPostedImage = postedImages.map((file) => {
+    //         if (id === file.id) {
+    //             return { ...file, displayComment: !file.displayComment }
+    //         }
+    //         return { ...file }
+    //     })
+    //     setPostedImages(updatedPostedImage)
+    // }
+    // const handleCommentReaction = (event) => {
+    //     const id = event.currentTarget.dataset.id;
+    //     const updatedPostedImage = postedImages.map((file) => {
+    //         if (id === file.id) {
+    //             const change = { ...file, displayComment: true }
+    //             console.log('change', change);
+    //             return change;
+    //         }
+    //         return { ...file }
+    //     })
+    //     setPostedImages(updatedPostedImage)
+    // }
+    // const addComment = (comment, id) => {
+    //     if (!comment) return;
+    //     const updatedPostedImage = postedImages.map((file) => {
+    //         if (id === file.id) {
+    //             const updatedComments = file.comments.push({ text: comment, id: uuidv4(), isEditable: false })
+    //             return { ...file, updatedComments }
+    //         }
+    //         return { ...file }
+    //     })
+    //     setPostedImages(updatedPostedImage);
+    // }
+    // const deleteComment = () => {
+    //     const updatedPostedImage = postedImages.map((file) => {
+    //         file.comments = file.comments.filter((comment) => id !== comment.id);
+    //         return { ...file }
+    //     })
+    //     setPostedImages(updatedPostedImage);
+    //     setAnchorEl(false);
+    // }
+    // const toggleEdit = () => {
+    //     const updatedPostedImage = postedImages.map((file) => {
+    //         file.comments = file.comments.map((comment) => {
+    //             if (commentId === comment.id) return { ...comment, isEditable: !comment.isEditable };
+    //             return comment;
+    //         });
+    //         return file
+    //     })
+    //     setPostedImages(updatedPostedImage);
+    //     setAnchorEl(false);
+    // }
+    // const editComment = (updatedText, id) => {
+    //     if (!updatedText) return;
+    //     const updatedPostedImage = postedImages.map((file) => {
+    //         file.comments = file.comments.map((comment) => {
+    //             if (id === comment.id) return { ...comment, text: updatedText, isEditable: !comment.isEditable };
+    //             return comment;
+    //         });
+    //         return file
+    //     })
+    //     setPostedImages(updatedPostedImage);
+    // }

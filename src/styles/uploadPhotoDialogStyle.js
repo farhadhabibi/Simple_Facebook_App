@@ -22,7 +22,7 @@ export default makeStyles((theme) => ({
         }
     },
     reactEmojiPickerWrapper: {
-        position: 'absolute',
+        // position: 'absolute',
         top: 0
     },
     uploadFileContainer: {

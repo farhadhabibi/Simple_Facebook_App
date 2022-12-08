@@ -15,7 +15,6 @@ import style from './styles/NavbarSideElementStyle';
 function NavbarSideElements(props) {
     const classes = style();
     const { anchor, handleMenuClose, handleProfileMenuOpen } = useContext(NavbarContext);
-
     const NavbarPopover = (
         <Menu
             anchorEl={anchor}

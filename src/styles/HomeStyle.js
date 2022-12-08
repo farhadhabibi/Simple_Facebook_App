@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 import { grey } from '@material-ui/core/colors';
-import { textAlign } from "@mui/system";
+import { textAlign, borderBottom } from "@mui/system";
 
 export default makeStyles((theme) => ({
     root: {
@@ -42,7 +42,14 @@ export default makeStyles((theme) => ({
     userActionPerformed: {
         display: 'flex',
         justifyContent: 'space-between',
-        marginBottom: '0.7rem'
+        marginBottom: '0.7rem',
+        height: '1.4rem'
+    },
+    commentCounts: {
+        '&:hover': {
+            cursor: 'pointer',
+            borderBottom: '1.5px solid grey'
+        }
     },
     userActions: {
         display: 'flex',
@@ -50,58 +57,41 @@ export default makeStyles((theme) => ({
         margin: '0.5rem',
     },
     userActionsButton: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
         position: 'absolute',
         height: '2rem',
-        lineHeight: '2rem',
         width: '12rem',
         fontWeight: '600',
         fontSize: '16px',
+        verticalAlign: 'middle',
         '&:hover': {
             backgroundColor: `${grey[200]}`,
             borderRadius: '6px',
         }
     },
-    icon: {
-        verticalAlign: 'middle'
-    },
-    likeReactionContainer: {
-        position: 'absolute',
-        boxShadow: 'rgba(0, 0, 0, 0.30) 0px 1px 10px',
-        borderRadius: '30px !important',
-        zIndex: 1,
-        // margin: '-50px 0 0 -85px',
-        padding: '3px',
-        width: '21%',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        animationName: '$example',
-        animationDuration: '0.1s',
-        animationFillMode: 'forwards',
-    },
-    '@keyframes example': {
-        from: { margin: '-20px 0 0 -85px' },
-        to: { margin: '-50px 0 0 -85px' },
-    },
-    likeReaction: {
-        transition: '0.3s',
-        '&:hover': {
-            cursor: 'pointer',
-            transform: 'scale(1.3)',
-        }
-    }
+    // emojiContainer: {
+    //     display: 'flex',
+    //     justifyContent: 'space-between',
+    //     alignItems: 'center',
+    //     wordBreak: 'break-all',
+    // },
+    // commentContainer: {
+    //     display: 'flex',
+    //     justifyContent: 'flex-start',
+    //     alignItems: 'center',
+    //     wordBreak: 'break-all'
+    // },
+    // commentSubContainer: {
+    //     marginLeft: '10px',
+    //     width: 'auto',
+    //     backgroundColor: '#F2F3F5',
+    //     padding: '0.7rem',
+    //     borderRadius: '20px',
+    // }
 }))
 
-// div {
-//     width: 100px;
-//     height: 100px;
-//     background - color: red;
-//     position: relative;
-//     animation - name: example;
-//     animation - duration: 0.5s;
-//     animation - fill - mode: forwards;
-// }
-
-
-
-// }
+// #F5F6F7;
+//  #F2F3F5;
+// #EBEDF0;
