@@ -36,7 +36,10 @@ import useAllMethodsState from './hooks/useAllMethodsState';
 import { AllMethodsContext } from './contexts/AllMethodsContext';
 
 function Home() {
-    const { postedImages, photoDialogShowing, showPhotoDialog, toggleComment, handleCommentReaction } = useContext(AllMethodsContext);
+    // const { postedImages, photoDialogShowing, showPhotoDialog, toggleComment, handleCommentReaction } = useContext(AllMethodsContext);
+    const { postedImages, dispatch } = useContext(AllMethodsContext, []);
+
+
 
     // const { selectedFile, anchorEl, open, defaultLikeToggle, onDrop,
     //     hidePhotoDialog, uploadedData, handlePopoverOpen, handlePopoverClose, handleLikeReaction, displayCommentOptions,
@@ -109,7 +112,7 @@ function Home() {
                                 </Box>
                                 <Box>
                                     <Typography variant="body" component="span" className={classes.commentCounts}
-                                        data-id={file.id} onClick={toggleComment}>
+                                        data-id={file.id} onClick={() => dispatch({ type: 'toggleComment' })}>
                                         {file.comments.length} Comments
                                      </Typography>
                                     <Typography variant="body" component="span">
@@ -123,7 +126,7 @@ function Home() {
                             <PhotoLike
                                 file={file}
                             />
-                            <IconButton data-id={file.id} onClick={handleCommentReaction}>
+                            <IconButton data-id={file.id} onClick={() => dispatch({ type: 'commentReaction' })}>
                                 <div className={classes.userActionsButton}>
                                     <ChatBubbleOutlineRoundedIcon />&nbsp;Comment
                                  </div>
@@ -173,7 +176,7 @@ function Home() {
                                     </Box>
                                     <Box>
                                         <Typography variant="body" component="span" className={classes.commentCounts}
-                                            data-id={file.id} onClick={toggleComment}>
+                                            data-id={file.id} onClick={() => dispatch({ type: 'toggleComment' })}>
                                             {file.comments.length} Comments
                                      </Typography>
                                         <Typography variant="body" component="span">
@@ -187,7 +190,7 @@ function Home() {
                                 <PhotoLike
                                     file={file}
                                 />
-                                <IconButton data-id={file.id} onClick={handleCommentReaction}>
+                                <IconButton data-id={file.id} onClick={() => dispatch({ type: 'commentReaction' })}>
                                     <div className={classes.userActionsButton}>
                                         <ChatBubbleOutlineRoundedIcon />&nbsp;Comment
                                         </div>
@@ -224,7 +227,7 @@ function Home() {
                         <CardActions className={classes.footer}>
                             <Stack spacing={8} direction="row">
                                 <Button size="small">Live Video</Button>
-                                <Button size="small" onClick={showPhotoDialog}>Photo/Video</Button>
+                                <Button size="small" onClick={() => dispatch({ type: 'showPhotoDialog' })}>Photo/Video</Button>
                                 <Button size="small">Feeling/Activity</Button>
                             </Stack>
                         </CardActions>
@@ -235,14 +238,14 @@ function Home() {
                     <p>xs=3</p>
                 </Grid>
             </Grid>
-            {photoDialogShowing && <UploadPhotoDialog />}
-            {
+            {/* {() => dispatch({ type: 'photoDialogShowing' }) && <UploadPhotoDialog />} */}
+            {/* {
                 showMore.toggle &&
                 <UploadPhotoOptions
                     showMore={showMore}
                     hideShowMoreOptions={hideShowMoreOptions}
                 />
-            }
+            } */}
         </div >
     )
 }
@@ -284,122 +287,3 @@ export default Home;
 //  good practice to have  methods for a specific actions in a new hook (actually component)
 // 3. use reducer for dialog/like/comment menthods hooks.
 
-
-
-
-
-
-// TRANSFERED TO OTHER COMPONENT
-
-    /** PHOTO DIALOG METHODS */
-    // const onDrop = useCallback(acceptedFiles => {
-    //     acceptedFiles.forEach((file) => {
-    //         setSelectedFile(file)
-    //     })
-    // }, [])
-
-    // const showPhotoDialog = () => {
-    //     setSelectedFile(null);
-    //     setPhotoDialogShowing(true)
-    // }
-    // const hidePhotoDialog = () => {
-    //     setPhotoDialogShowing(false)
-    // }
-    // const displayAddedText = (text) => {
-    //     setUploadText(text)
-    // }
-    // const postData = () => {
-    //     const data = {
-    //         id: uuidv4(),
-    //         selectedFile,
-    //         uploadText,
-    //         postedAt: new Date(baseTime).getTime(),
-    //         displayComment: false,
-    //         displayLikePopover: false,
-    //         comments: [],
-    //         likes: [
-    //             { id: uuidv4(), isTrue: false, title: 'like', count: 0 },
-    //             { id: uuidv4(), isTrue: false, title: 'love', count: 0 },
-    //             { id: uuidv4(), isTrue: false, title: 'yay', count: 0 },
-    //             { id: uuidv4(), isTrue: false, title: 'haha', count: 0 },
-    //             { id: uuidv4(), isTrue: false, title: 'wow', count: 0 },
-    //             { id: uuidv4(), isTrue: false, title: 'sad', count: 0 },
-    //             { id: uuidv4(), isTrue: false, title: 'angry', count: 0 }
-    //         ]
-    //     }
-    //     setPostedImages([...postedImages, data]);
-    // }
-
-
-
-      /** PHOTO COMMENT METHODS */
-    // const displayCommentOptions = (event, commentId) => {
-    //     setCommentId(commentId)
-    //     setAnchorEl(event.currentTarget);
-    // };
-    // const closeCommentOptions = () => {
-    //     setAnchorEl(false);
-    // };
-    // const toggleComment = (e) => {
-    //     const id = e.currentTarget.dataset.id;
-    //     const updatedPostedImage = postedImages.map((file) => {
-    //         if (id === file.id) {
-    //             return { ...file, displayComment: !file.displayComment }
-    //         }
-    //         return { ...file }
-    //     })
-    //     setPostedImages(updatedPostedImage)
-    // }
-    // const handleCommentReaction = (event) => {
-    //     const id = event.currentTarget.dataset.id;
-    //     const updatedPostedImage = postedImages.map((file) => {
-    //         if (id === file.id) {
-    //             const change = { ...file, displayComment: true }
-    //             console.log('change', change);
-    //             return change;
-    //         }
-    //         return { ...file }
-    //     })
-    //     setPostedImages(updatedPostedImage)
-    // }
-    // const addComment = (comment, id) => {
-    //     if (!comment) return;
-    //     const updatedPostedImage = postedImages.map((file) => {
-    //         if (id === file.id) {
-    //             const updatedComments = file.comments.push({ text: comment, id: uuidv4(), isEditable: false })
-    //             return { ...file, updatedComments }
-    //         }
-    //         return { ...file }
-    //     })
-    //     setPostedImages(updatedPostedImage);
-    // }
-    // const deleteComment = () => {
-    //     const updatedPostedImage = postedImages.map((file) => {
-    //         file.comments = file.comments.filter((comment) => id !== comment.id);
-    //         return { ...file }
-    //     })
-    //     setPostedImages(updatedPostedImage);
-    //     setAnchorEl(false);
-    // }
-    // const toggleEdit = () => {
-    //     const updatedPostedImage = postedImages.map((file) => {
-    //         file.comments = file.comments.map((comment) => {
-    //             if (commentId === comment.id) return { ...comment, isEditable: !comment.isEditable };
-    //             return comment;
-    //         });
-    //         return file
-    //     })
-    //     setPostedImages(updatedPostedImage);
-    //     setAnchorEl(false);
-    // }
-    // const editComment = (updatedText, id) => {
-    //     if (!updatedText) return;
-    //     const updatedPostedImage = postedImages.map((file) => {
-    //         file.comments = file.comments.map((comment) => {
-    //             if (id === comment.id) return { ...comment, text: updatedText, isEditable: !comment.isEditable };
-    //             return comment;
-    //         });
-    //         return file
-    //     })
-    //     setPostedImages(updatedPostedImage);
-    // }
