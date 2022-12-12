@@ -14,57 +14,56 @@ import { AllMethodsContext } from './contexts/AllMethodsContext';
 import styles from './styles/PhotoLikeStyle'
 
 function PhotoLike(props) {
-    const { handlePopoverOpen, handlePopoverClose, handleLikeReaction } = useContext(AllMethodsContext);
+    const { postedimages, dispatch } = useContext(AllMethodsContext);
     const { file } = props;
     const classes = styles();
-
     const [defaultLikeToggle, setDefaultLikeToggle] = useState(true);
 
     return (
-        <div data-id={file.id} onMouseLeave={(event) => console.log('event', event)}>
+        <div data-id={file.id} onMouseLeave={(event) => dispatch({ type: 'popeOverOpen', event: event, file: file })}>
             <div data-id={file.id} onMouseEnter={(event) => {
-                !file.displayLikePopover && handlePopoverOpen(event, file);
+                !file.displayLikePopover && dispatch({ type: 'popeOverOpen', event: event.currentTarget.dataset.id, file: file });
             }}>
                 {defaultLikeToggle && file.displayLikePopover &&
                     <Paper variant='oulined' className={classes.likeReactionContainer}>
-                        <Box className={classes.likeReaction} data-name='like' onClick={(event) => handleLikeReaction(event, file)}>
+                        <Box className={classes.likeReaction} data-name='like' onClick={(event) => dispatch({ type: 'likeReaction', event: event, file: file })}>
                             <Tooltip title="Like" placement="top">
                                 <span><FacebookEmoji type='like' size='sm' /></span>
                             </Tooltip>
                         </Box>
-                        <Box className={classes.likeReaction} data-name='love' onClick={(event) => handleLikeReaction(event, file)}>
+                        <Box className={classes.likeReaction} data-name='love' onClick={(event) => dispatch({ type: 'likeReaction', event: event, file: file })}>
                             <Tooltip title="Love" placement="top">
                                 <span> <FacebookEmoji type='love' size='sm' /></span>
                             </Tooltip>
                         </Box>
-                        <Box className={classes.likeReaction} data-name='yay' onClick={(event) => handleLikeReaction(event, file)}>
+                        <Box className={classes.likeReaction} data-name='yay' onClick={(event) => dispatch({ type: 'likeReaction', event: event, file: file })}>
                             <Tooltip title="Care" placement="top">
                                 <span> <FacebookEmoji type='yay' size='sm' /></span>
                             </Tooltip>
                         </Box>
-                        <Box className={classes.likeReaction} data-name='haha' onClick={(event) => handleLikeReaction(event, file)}>
+                        <Box className={classes.likeReaction} data-name='haha' onClick={(event) => dispatch({ type: 'likeReaction', event: event, file: file })}>
                             <Tooltip title="Haha" placement="top">
                                 <span> <FacebookEmoji type='haha' size='sm' /></span>
                             </Tooltip>
                         </Box>
-                        <Box className={classes.likeReaction} data-name='wow' onClick={(event) => handleLikeReaction(event, file)}>
+                        <Box className={classes.likeReaction} data-name='wow' onClick={(event) => dispatch({ type: 'likeReaction', event: event, file: file })}>
                             <Tooltip title="Wow" placement="top">
                                 <span> <FacebookEmoji type='wow' size='sm' /></span>
                             </Tooltip>
                         </Box>
-                        <Box className={classes.likeReaction} data-name='sad' onClick={(event) => handleLikeReaction(event, file)}>
+                        <Box className={classes.likeReaction} data-name='sad' onClick={(event) => dispatch({ type: 'likeReaction', event: event, file: file })}>
                             <Tooltip title="Sad" placement="top">
                                 <span> <FacebookEmoji type='sad' size='sm' /></span>
                             </Tooltip>
                         </Box>
-                        <Box className={classes.likeReaction} data-name='angry' onClick={(event) => handleLikeReaction(event, file)}>
+                        <Box className={classes.likeReaction} data-name='angry' onClick={(event) => dispatch({ type: 'likeReaction', event: event, file: file })}>
                             <Tooltip title="Angry" placement="top">
                                 <span> <FacebookEmoji type='angry' size='sm' /></span>
                             </Tooltip>
                         </Box>
                     </Paper>
                 }
-                <IconButton data-name='like' data-id={file.id} onClick={(event) => handleLikeReaction(event, file, true)}>
+                <IconButton data-name='like' data-id={file.id} onClick={(event) => dispatch({ type: 'likeReaction', event: event, file: file, true: true })}>
                     <div className={classes.userActionsButton}>
                         {
                             (function showElement() {

@@ -53,13 +53,13 @@ function reducer(state, action) {
         /** PHOTO LIKE METHODS */
         case 'popeOverOpen':
             const handlePopoverOpen = (() => {
+                let data = [];
                 // setDefaultLikeToggle(true);
-                console.log('actions', action.event)
                 if (!action.file.displayLikePopover) {
                     clearTimeout(timerOpen);
-                    const fileId = action.event.currentTarget.dataset.id;
+                    const fileId = action.event;
                     timerOpen = setTimeout(() => {
-                        return (handlePopoverOpenAndClose(fileId, true));
+                        return handlePopoverOpenAndClose(fileId, true)
                     }, 500)
                 }
             })();
