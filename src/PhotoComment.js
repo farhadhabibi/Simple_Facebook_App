@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useContext } from 'react';
+import React, { useRef, useEffect, useContext, useState } from 'react';
 
 import ChatBubbleOutlineRoundedIcon from '@mui/icons-material/ChatBubbleOutlineRounded';
 import IconButton from '@material-ui/core/IconButton';
@@ -22,9 +22,12 @@ import { AllMethodsContext } from './contexts/AllMethodsContext';
 import styles from './styles/PhotoCommentStyle';
 
 function PhotoComment(props) {
-    const { addComment, displayCommentOptions, open, anchorEl, closeCommentOptions,
-        editComment, toggleEdit, deleteComment } = useContext(AllMethodsContext);
+    const { addComment, editComment, toggleEdit, deleteComment } = useContext(AllMethodsContext);
     const { file } = props;
+
+    const [commentId, setCommentId] = useState(null);
+    const [anchorEl, setAnchorEl] = useState(false);
+    const open = Boolean(anchorEl);
 
     const emojiRef = useRef();
     const classes = styles();
@@ -33,6 +36,15 @@ function PhotoComment(props) {
         if (!emojiRef.current) return;
         emojiRef.current.focus();
     }, [file.displayComment])
+
+
+    const displayCommentOptions = (event, commentId) => {
+        setCommentId(commentId)
+        setAnchorEl(event.currentTarget);
+    };
+    const closeCommentOptions = () => {
+        setAnchorEl(false);
+    };
 
     return (
         <div>
@@ -93,12 +105,12 @@ function PhotoComment(props) {
                                             >
                                                 <List sx={{ padding: 0.5, width: '22rem', fontWeight: 'bold' }}>
                                                     <ListItem sx={{ padding: 0 }} >
-                                                        <ListItemButton onClick={toggleEdit}>
+                                                        <ListItemButton onClick={() => toggleEdit(commentId)}>
                                                             <ListItemText primary="Edit" />
                                                         </ListItemButton>
                                                     </ListItem>
                                                     <ListItem sx={{ padding: 0 }}>
-                                                        <ListItemButton onClick={deleteComment}>
+                                                        <ListItemButton onClick={() => deleteComment(commentId)}>
                                                             <ListItemText primary='Delete' />
                                                         </ListItemButton>
                                                     </ListItem>

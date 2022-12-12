@@ -7,7 +7,6 @@ export const AllMethodsContext = createContext();
 
 export function AllMethodsProvider(props) {
     const [postedImages, dispatch] = useReducer(allMethodsReducer, []);
-    console.log('po', postedImages, dispatch)
 
     // const postedDataMethods = useAllMethodsState();
 

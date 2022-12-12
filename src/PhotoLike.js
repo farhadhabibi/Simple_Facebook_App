@@ -14,12 +14,14 @@ import { AllMethodsContext } from './contexts/AllMethodsContext';
 import styles from './styles/PhotoLikeStyle'
 
 function PhotoLike(props) {
-    const { handlePopoverOpen, handlePopoverClose, handleLikeReaction, defaultLikeToggle } = useContext(AllMethodsContext);
+    const { handlePopoverOpen, handlePopoverClose, handleLikeReaction } = useContext(AllMethodsContext);
     const { file } = props;
     const classes = styles();
 
+    const [defaultLikeToggle, setDefaultLikeToggle] = useState(true);
+
     return (
-        <div data-id={file.id} onMouseLeave={(event) => handlePopoverClose(event, file)}>
+        <div data-id={file.id} onMouseLeave={(event) => console.log('event', event)}>
             <div data-id={file.id} onMouseEnter={(event) => {
                 !file.displayLikePopover && handlePopoverOpen(event, file);
             }}>

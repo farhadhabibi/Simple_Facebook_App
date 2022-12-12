@@ -31,15 +31,17 @@ import './styles/homeEmoji.css'
 import style from './styles/HomeStyle';
 
 import LoginPage from './LoginPage';
+
 import useAllMethodsState from './hooks/useAllMethodsState';
+import useToggleBox from './hooks/useToggleBox';
 
 import { AllMethodsContext } from './contexts/AllMethodsContext';
 
 function Home() {
     // const { postedImages, photoDialogShowing, showPhotoDialog, toggleComment, handleCommentReaction } = useContext(AllMethodsContext);
-    const { postedImages, dispatch } = useContext(AllMethodsContext, []);
+    const { postedImages, dispatch } = useContext(AllMethodsContext);
 
-
+    const [photoDialogShowing, toggle] = useToggleBox(false);
 
     // const { selectedFile, anchorEl, open, defaultLikeToggle, onDrop,
     //     hidePhotoDialog, uploadedData, handlePopoverOpen, handlePopoverClose, handleLikeReaction, displayCommentOptions,
@@ -55,6 +57,11 @@ function Home() {
     const hideShowMoreOptions = () => {
         setShowMore({ ...showMore, toggle: false })
     }
+
+    // const showPhotoDialog = () => {
+    //     // setSelectedFile(null);
+    //     setPhotoDialogShowing(true)
+    // }
 
     const images = postedImages.map((file, index) => {
         return (
@@ -227,7 +234,7 @@ function Home() {
                         <CardActions className={classes.footer}>
                             <Stack spacing={8} direction="row">
                                 <Button size="small">Live Video</Button>
-                                <Button size="small" onClick={() => dispatch({ type: 'showPhotoDialog' })}>Photo/Video</Button>
+                                <Button size="small" onClick={toggle}>Photo/Video</Button>
                                 <Button size="small">Feeling/Activity</Button>
                             </Stack>
                         </CardActions>
@@ -238,14 +245,14 @@ function Home() {
                     <p>xs=3</p>
                 </Grid>
             </Grid>
-            {/* {() => dispatch({ type: 'photoDialogShowing' }) && <UploadPhotoDialog />} */}
-            {/* {
+            {photoDialogShowing && <UploadPhotoDialog hidePhotoDialog={toggle} />}
+            {
                 showMore.toggle &&
                 <UploadPhotoOptions
                     showMore={showMore}
                     hideShowMoreOptions={hideShowMoreOptions}
                 />
-            } */}
+            }
         </div >
     )
 }

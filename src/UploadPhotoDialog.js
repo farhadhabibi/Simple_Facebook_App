@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import Button from '@mui/material/Button';
 import { styled } from '@mui/material/styles';
@@ -29,6 +29,8 @@ import InputEmoji from 'react-input-emoji';
 import { useDropzone } from 'react-dropzone'
 
 import { AllMethodsContext } from './contexts/AllMethodsContext';
+
+import useToggleBox from './hooks/useToggleBox';
 
 // import './styles/homeEmoji.css'
 import './styles/emoji.css'
@@ -74,13 +76,19 @@ BootstrapDialogTitle.propTypes = {
     onClose: PropTypes.func.isRequired,
 };
 
-function UploadPhotoDialog(props) {
+function UploadPhotoDialog({ hidePhotoDialog }) {
     const classes = style();
-    const { hidePhotoDialog, uploadedData, selectedFile, onDrop } = useContext(AllMethodsContext);
+    const { postedimages, dispatch } = useContext(AllMethodsContext);
 
     const [open, setOpen] = useState(true);
     const [uploadedText, setUploadedText] = useState();
+    const [selectedFile, setSelectedFile] = useState(null);
 
+    const onDrop = useCallback(acceptedFiles => {
+        acceptedFiles.forEach((file) => {
+            setSelectedFile(file)
+        })
+    }, []);
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         onDrop,
@@ -89,7 +97,7 @@ function UploadPhotoDialog(props) {
         // },
     })
     const handlePostData = () => {
-        uploadedData(uploadedText);
+        dispatch({ type: 'uploadData', text: uploadedText, selectedFile: selectedFile })
         hidePhotoDialog();
     }
     const addedText = (event) => {
@@ -100,7 +108,7 @@ function UploadPhotoDialog(props) {
             <BootstrapDialog className={classes.dialog}
                 aria-labelledby="customized-dialog-title"
                 open={open}>
-                <BootstrapDialogTitle id="customized-dialog-title" onClose={hidePhotoDialog}>
+                <BootstrapDialogTitle id="customized-dialog-title" onClose={hidePhotoDialog} >
                     Modal title
                 </BootstrapDialogTitle>
                 <DialogContent dividers style={{ overflow: 'scroll' }}>
@@ -111,7 +119,7 @@ function UploadPhotoDialog(props) {
                             <Typography variant="h7" component="span">
                                 Farhad Malik
                             </Typography>
-                            <Button variant="contained" color="inherit" size="small">
+                            <Button variant="contained" color="inherit" size="small" onClick={handlePostData}>
                                 Public
                              <ArrowDropDownIcon />
                             </Button>
