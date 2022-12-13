@@ -22,7 +22,8 @@ import { AllMethodsContext } from './contexts/AllMethodsContext';
 import styles from './styles/PhotoCommentStyle';
 
 function PhotoComment(props) {
-    const { addComment, editComment, toggleEdit, deleteComment } = useContext(AllMethodsContext);
+    const { dispatch } = useContext(AllMethodsContext)
+    // const { addComment, editComment, toggleEdit, deleteComment } = useContext(AllMethodsContext);
     const { file } = props;
 
     const [commentId, setCommentId] = useState(null);
@@ -60,7 +61,7 @@ function PhotoComment(props) {
                                     placeholder="Type a message..."
                                     theme="auto"
                                     cleanOnEnter
-                                    onEnter={(event) => addComment(event, file.id)}
+                                    onEnter={(event) => dispatch({ type: 'addComment', fileId: file.id, comment: event })}
                                 />
                             </Box>
                             {
@@ -84,7 +85,6 @@ function PhotoComment(props) {
                                                             <Avatar alt="Farhad" src="/static/images/avatar/1.jpg" />
                                                             <EditCommentForm
                                                                 comment={comment}
-                                                                editComment={editComment}
                                                             />
                                                         </Box>
                                                     )
@@ -105,12 +105,14 @@ function PhotoComment(props) {
                                             >
                                                 <List sx={{ padding: 0.5, width: '22rem', fontWeight: 'bold' }}>
                                                     <ListItem sx={{ padding: 0 }} >
-                                                        <ListItemButton onClick={() => toggleEdit(commentId)}>
+                                                        <ListItemButton
+                                                            onClick={() => dispatch({ type: 'toggleEdit', commentId })}>
                                                             <ListItemText primary="Edit" />
                                                         </ListItemButton>
                                                     </ListItem>
                                                     <ListItem sx={{ padding: 0 }}>
-                                                        <ListItemButton onClick={() => deleteComment(commentId)}>
+                                                        <ListItemButton
+                                                            onClick={() => dispatch({ type: 'deleteComment', commentId })}>
                                                             <ListItemText primary='Delete' />
                                                         </ListItemButton>
                                                     </ListItem>

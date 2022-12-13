@@ -1,7 +1,10 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useContext } from 'react';
 import InputEmoji from 'react-input-emoji';
 
-function EditCommentForm({ comment, editComment }) {
+import { AllMethodsContext } from './contexts/AllMethodsContext';
+
+function EditCommentForm({ comment }) {
+    const { dispatch } = useContext(AllMethodsContext)
     const emojiRef = useRef();
 
     useEffect(() => {
@@ -19,7 +22,7 @@ function EditCommentForm({ comment, editComment }) {
             theme="auto"
             cleanOnEnter
             autoFocus={true}
-            onEnter={(e) => editComment(e, comment.id)}
+            onEnter={(event) => dispatch({ type: 'editComment', updatedText: event, commentId: comment.id })}
         />
     )
 }

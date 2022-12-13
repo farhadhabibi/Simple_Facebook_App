@@ -40,6 +40,7 @@ import { AllMethodsContext } from './contexts/AllMethodsContext';
 function Home() {
     // const { postedImages, photoDialogShowing, showPhotoDialog, toggleComment, handleCommentReaction } = useContext(AllMethodsContext);
     const { postedImages, dispatch } = useContext(AllMethodsContext);
+    // console.log('postedimage', postedImages)
 
     const [photoDialogShowing, toggle] = useToggleBox(false);
 
@@ -118,8 +119,8 @@ function Home() {
                                     </Typography>
                                 </Box>
                                 <Box>
-                                    <Typography variant="body" component="span" className={classes.commentCounts}
-                                        data-id={file.id} onClick={() => dispatch({ type: 'toggleComment' })}>
+                                    <Typography variant="body" component="span" className={classes.commentCounts} data-id={file.id}
+                                        onClick={(event) => dispatch({ type: 'toggleComment', event: event.currentTarget.dataset.id })}>
                                         {file.comments.length} Comments
                                      </Typography>
                                     <Typography variant="body" component="span">
@@ -133,7 +134,8 @@ function Home() {
                             <PhotoLike
                                 file={file}
                             />
-                            <IconButton data-id={file.id} onClick={() => dispatch({ type: 'commentReaction' })}>
+                            <IconButton data-id={file.id}
+                                onClick={(event) => dispatch({ type: 'commentReaction', event: event.currentTarget.dataset.id })}>
                                 <div className={classes.userActionsButton}>
                                     <ChatBubbleOutlineRoundedIcon />&nbsp;Comment
                                  </div>
@@ -182,8 +184,8 @@ function Home() {
                                     </Typography>
                                     </Box>
                                     <Box>
-                                        <Typography variant="body" component="span" className={classes.commentCounts}
-                                            data-id={file.id} onClick={() => dispatch({ type: 'toggleComment' })}>
+                                        <Typography variant="body" component="span" className={classes.commentCounts} data-id={file.id}
+                                            onClick={(event) => dispatch({ type: 'toggleComment', event: event.currentTarget.dataset.id })}>
                                             {file.comments.length} Comments
                                      </Typography>
                                         <Typography variant="body" component="span">
@@ -197,7 +199,8 @@ function Home() {
                                 <PhotoLike
                                     file={file}
                                 />
-                                <IconButton data-id={file.id} onClick={() => dispatch({ type: 'commentReaction' })}>
+                                <IconButton data-id={file.id}
+                                    onClick={(event) => dispatch({ type: 'commentReaction', event: event.currentTarget.dataset.id })}>
                                     <div className={classes.userActionsButton}>
                                         <ChatBubbleOutlineRoundedIcon />&nbsp;Comment
                                         </div>

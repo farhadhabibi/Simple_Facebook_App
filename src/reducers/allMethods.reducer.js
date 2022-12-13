@@ -2,9 +2,10 @@ import React, { useState, useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 function reducer(state, action) {
-    console.log('type', action.type)
+    // console.log('type', action)
     const baseTime = Date.now();
     let timerOpen = 0;
+    let data = [];
 
     // const [postedImages, setPostedImages] = useState([]);
     // // const [postedImages, setPostedImages] = useLocalStorageState('files');
@@ -51,165 +52,164 @@ function reducer(state, action) {
             })();
 
         /** PHOTO LIKE METHODS */
-        case 'popeOverOpen':
+        case 'popOverOpen':
+            // const handlePopoverOpen = (async () => {
+            //     const myPromise = await new Promise((resolve, reject) => {
+            //         if (!action.file.displayLikePopover) {
+            //             clearTimeout(timerOpen);
+            //             const fileId = action.event;
+            //             timerOpen = setTimeout(() => {
+            //                 return resolve(handlePopoverOpenAndClose(fileId, true));
+            //             }, 500)
+            //         }
+            //     })
+            //     console.log('myPromise', myPromise)
+            //     return myPromise;
+            // })();
+            // return handlePopoverOpen;
+
             const handlePopoverOpen = (() => {
-                let data = [];
                 // setDefaultLikeToggle(true);
                 if (!action.file.displayLikePopover) {
                     clearTimeout(timerOpen);
                     const fileId = action.event;
-                    timerOpen = setTimeout(() => {
-                        return handlePopoverOpenAndClose(fileId, true)
-                    }, 500)
+                    return handlePopoverOpenAndClose(fileId, true);
                 }
             })();
-            console.log('data return', handlePopoverOpen);
             return handlePopoverOpen;
-        // case 'popOverClose':
-        //     const handlePopoverClose = (event, file) => {
-        //         clearTimeout(timerOpen);
-        //         const fileId = event.currentTarget.dataset.id;
-        //         timerOpen = setTimeout(() => {
-        //             setPostedImages(handlePopoverOpenAndClose(fileId, false));
-        //         }, 500)
-        //     };
-        //     return handlePopoverClose;
-        // case 'likeReaction':
-        //     const handleLikeReaction = (event, fileContent, toggleLike = false) => {
-        //         const title = event.currentTarget.dataset.name;
-        //         setDefaultLikeToggle(false)
-        //         clearTimeout(timerOpen);
-        //         /** Made all the isTrue key for likes object of a file to false */
-        //         const updatedPostedImage = postedImages.map(file => {
-        //             if (file.id === fileContent.id) {
-        //                 file.likes = file.likes.map(like => {
-        //                     return {
-        //                         ...like, isTrue: like.title === 'like' && toggleLike ? like.isTrue : false,
-        //                         count: like.title === 'like' && toggleLike ? like.count : (like.count > 0) ? --like.count : like.count
-        //                     };
-        //                 })
-        //                 if (!toggleLike) {
-        //                     return { ...file, displayLikePopover: false }
-        //                 } else return file
-        //             }
-        //             return file
-        //         });
-        //         const [result] = fileContent.likes.filter(like => {
-        //             if (like.title === title) return like
-        //         })
-        //         /** Made a single isTrue key to true  */
-        //         const finalPostedImage = updatedPostedImage.map(file => {
-        //             file.likes = file.likes.map(like => {
-        //                 if (like.id === result.id) {
-        //                     return {
-        //                         ...like, isTrue: like.title === 'like' && toggleLike ? !like.isTrue : true,
-        //                     }
-        //                 }
-        //                 return like;
-        //             })
-        //             /** handle the like count; if like is true then count++ else count-- */
-        //             file.likes.map((like) => {
-        //                 if (like.id === result.id) {
-        //                     return {
-        //                         ...like, count: like.isTrue ? ++like.count : --like.count
-        //                     }
-        //                 }
-        //                 return like;
-        //             })
-        //             return file;
-        //         })
-        //         setPostedImages(finalPostedImage);
-        //     };
-        //     return handleLikeReaction;
+
+        case 'popOverClose':
+            const handlePopoverClose = (() => {
+                clearTimeout(timerOpen);
+                const fileId = action.event;
+                return handlePopoverOpenAndClose(fileId, false);
+            })();
+            return handlePopoverClose;
+
+        case 'likeReaction':
+            const handleLikeReaction = (() => {
+                const title = action.event;
+                // setDefaultLikeToggle(false)
+                clearTimeout(timerOpen);
+                /** Made all the isTrue key for likes object of a file to false */
+                const updatedPostedImage = state.map(file => {
+                    if (file.id === action.file.id) {
+                        file.likes = file.likes.map(like => {
+                            return {
+                                ...like, isTrue: like.title === 'like' && action.toggle ? like.isTrue : false,
+                                count: like.title === 'like' && action.toggle ? like.count : (like.count > 0) ? --like.count : like.count
+                            };
+                        })
+                        if (!action.toggle) {
+                            return { ...file, displayLikePopover: false }
+                        } else return file
+                    }
+                    return file
+                });
+                const [result] = action.file.likes.filter(like => {
+                    if (like.title === title) return like
+                })
+                /** Made a single isTrue key to true  */
+                const finalPostedImage = updatedPostedImage.map(file => {
+                    file.likes = file.likes.map(like => {
+                        if (like.id === result.id) {
+                            return {
+                                ...like, isTrue: like.title === 'like' && action.toggle ? !like.isTrue : true,
+                            }
+                        }
+                        return like;
+                    })
+                    /** handle the like count; if like is true then count++ else count-- */
+                    file.likes.map((like) => {
+                        if (like.id === result.id) {
+                            return {
+                                ...like, count: like.isTrue ? ++like.count : --like.count
+                            }
+                        }
+                        return like;
+                    })
+                    return file;
+                })
+                return finalPostedImage;
+            })();
+            return handleLikeReaction;
 
         /** PHOTO COMMENT METHODS */
-        // case 'displayCommentOptions':
-        //     const displayCommentOptions = (event, commentId) => {
-        //         setCommentId(commentId)
-        //         setAnchorEl(event.currentTarget);
-        //     };
-        //     return displayCommentOptions;
-        // case 'closeCommentOptions':
-        //     const closeCommentOptions = () => {
-        //         setAnchorEl(false);
-        //     };
-        //         return closeCommentOptions;
-        //     case 'toggleComment':
-        //         const toggleComment = (event) => {
-        //             const id = event.currentTarget.dataset.id;
-        //             const updatedPostedImage = postedImages.map((file) => {
-        //                 if (id === file.id) {
-        //                     return { ...file, displayComment: !file.displayComment }
-        //                 }
-        //                 return { ...file }
-        //             })
-        //             setPostedImages(updatedPostedImage)
-        //         };
-        //         return toggleComment;
-        //     case 'commentReaction':
-        //         const handleCommentReaction = (event) => {
-        //             const id = event.currentTarget.dataset.id;
-        //             const updatedPostedImage = postedImages.map((file) => {
-        //                 if (id === file.id) {
-        //                     return { ...file, displayComment: true }
-        //                 }
-        //                 return { ...file }
-        //             })
-        //             setPostedImages(updatedPostedImage)
-        //         };
-        //         return handleCommentReaction;
-        //     case 'addComment':
-        //         const addComment = (comment, id) => {
-        //             if (!comment) return;
-        //             const updatedPostedImage = postedImages.map((file) => {
-        //                 if (id === file.id) {
-        //                     const updatedComments = file.comments.push({ text: comment, id: uuidv4(), isEditable: false })
-        //                     return { ...file, updatedComments }
-        //                 }
-        //                 return { ...file }
-        //             })
-        //             setPostedImages(updatedPostedImage);
-        //         };
-        //         return addComment;
-        //     case 'deleteComment':
-        //         const deleteComment = (commentId) => {
-        //             const updatedPostedImage = postedImages.map((file) => {
-        //                 file.comments = file.comments.filter((comment) => commentId !== comment.id);
-        //                 return { ...file }
-        //             })
-        //             setPostedImages(updatedPostedImage);
-        //             setAnchorEl(false);
-        //         };
-        //         return deleteComment;
-        //     case 'toggleEdit':
-        //         const toggleEdit = (commentId) => {
-        //             const updatedPostedImage = postedImages.map((file) => {
-        //                 file.comments = file.comments.map((comment) => {
-        //                     if (commentId === comment.id) return { ...comment, isEditable: !comment.isEditable };
-        //                     return comment;
-        //                 });
-        //                 return file
-        //             })
-        //             setPostedImages(updatedPostedImage);
-        //             setAnchorEl(false);
-        //         };
-        //         return toggleEdit;
-        //     case 'editComment':
-        //         const editComment = (updatedText, id) => {
-        //             if (!updatedText) return;
-        //             const updatedPostedImage = postedImages.map((file) => {
-        //                 file.comments = file.comments.map((comment) => {
-        //                     if (id === comment.id) return { ...comment, text: updatedText, isEditable: !comment.isEditable };
-        //                     return comment;
-        //                 });
-        //                 return file
-        //             })
-        //             setPostedImages(updatedPostedImage);
-        //         };
-        //         return editComment;
-        //     default:
-        //         return state;
+        case 'toggleComment':
+            const toggleComment = (() => {
+                const id = action.event;
+                const updatedPostedImage = state.map((file) => {
+                    if (id === file.id) {
+                        return { ...file, displayComment: !file.displayComment }
+                    }
+                    return { ...file }
+                })
+                return updatedPostedImage;
+            })();
+            return toggleComment;
+        case 'commentReaction':
+            const handleCommentReaction = (() => {
+                const id = action.event;
+                const updatedPostedImage = state.map((file) => {
+                    if (id === file.id) {
+                        return { ...file, displayComment: true }
+                    }
+                    return { ...file }
+                })
+                return updatedPostedImage;
+            })();
+            return handleCommentReaction;
+        case 'addComment':
+            const addComment = (() => {
+                if (!action.comment) return;
+                const updatedPostedImage = state.map((file) => {
+                    if (action.fileId === file.id) {
+                        const updatedComments = file.comments.push({ text: action.comment, id: uuidv4(), isEditable: false })
+                        return { ...file, updatedComments }
+                    }
+                    return { ...file }
+                })
+                return updatedPostedImage;
+            })();
+            return addComment;
+        case 'deleteComment':
+            const deleteComment = (() => {
+                const updatedPostedImage = state.map((file) => {
+                    file.comments = file.comments.filter((comment) => action.commentId !== comment.id);
+                    return { ...file }
+                })
+                return updatedPostedImage;
+                // setAnchorEl(false);
+            })();
+            return deleteComment;
+        case 'toggleEdit':
+            const toggleEdit = (() => {
+                const updatedPostedImage = state.map((file) => {
+                    file.comments = file.comments.map((comment) => {
+                        if (action.commentId === comment.id) return { ...comment, isEditable: !comment.isEditable };
+                        return comment;
+                    });
+                    return file
+                })
+                return updatedPostedImage;
+                // setAnchorEl(false);
+            })();
+            return toggleEdit;
+        case 'editComment':
+            const editComment = (() => {
+                if (!action.updatedText) return;
+                const updatedPostedImage = state.map((file) => {
+                    file.comments = file.comments.map((comment) => {
+                        if (action.commentId === comment.id) return { ...comment, text: action.updatedText, isEditable: !comment.isEditable };
+                        return comment;
+                    });
+                    return file
+                })
+                return updatedPostedImage;
+            })();
+            return editComment;
+        default:
+            return state;
     }
 }
 export default reducer;
-
