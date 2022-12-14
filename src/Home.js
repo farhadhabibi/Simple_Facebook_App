@@ -105,7 +105,7 @@ function Home() {
                                             file.likes.map((like) => {
                                                 if (like.isTrue)
                                                     return <FacebookEmoji key={like.id} type={like.title} size='xxs' />
-
+                                                return null;
                                             })
                                         }
                                         &nbsp;
@@ -113,7 +113,8 @@ function Home() {
                                     <Typography variant='body' component="span">
                                         {
                                             file.likes.map((like) => {
-                                                if (like.isTrue) return like.count
+                                                if (like.isTrue) return like.count;
+                                                return null;
                                             })
                                         }
                                     </Typography>
@@ -165,7 +166,6 @@ function Home() {
                                     </IconButton>
                                 }
                                 title="Farhad Malik"
-                                subheader={file.postedAt}
                                 subheader={<GetTimeAndDate date={file.postedAt} />}
                             />
                             <CardContent className={classes.addedTextContainer}>
@@ -262,7 +262,7 @@ function Home() {
 export default Home;
 
 
-{/* English app, 4 include persion, 7 offline may include persion, 8 include persion, 12 offline no persion */ }
+/* English app, 4 include persion, 7 offline may include persion, 8 include persion, 12 offline no persion */
 
 // if setState iside map/forEach not work properly...
 

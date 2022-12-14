@@ -2,20 +2,8 @@ import React, { useState, useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 function reducer(state, action) {
-    // console.log('type', action)
     const baseTime = Date.now();
     let timerOpen = 0;
-    let data = [];
-
-    // const [postedImages, setPostedImages] = useState([]);
-    // // const [postedImages, setPostedImages] = useLocalStorageState('files');
-
-    // const [selectedFile, setSelectedFile] = useState(null);
-    // const [photoDialogShowing, setPhotoDialogShowing] = useState(false)
-    // const [commentId, setCommentId] = useState(null);
-    // const [anchorEl, setAnchorEl] = useState(false);
-    // const open = Boolean(anchorEl);
-    // const [defaultLikeToggle, setDefaultLikeToggle] = useState(true);
 
     const handlePopoverOpenAndClose = (id, displayLikePopover) => {
         const updatedPostedImage = state.map(file => {
@@ -107,7 +95,8 @@ function reducer(state, action) {
                     return file
                 });
                 const [result] = action.file.likes.filter(like => {
-                    if (like.title === title) return like
+                    if (like.title === title) return like;
+                    return null;
                 })
                 /** Made a single isTrue key to true  */
                 const finalPostedImage = updatedPostedImage.map(file => {
@@ -179,7 +168,6 @@ function reducer(state, action) {
                     return { ...file }
                 })
                 return updatedPostedImage;
-                // setAnchorEl(false);
             })();
             return deleteComment;
         case 'toggleEdit':

@@ -46,7 +46,6 @@ function PhotoComment(props) {
     const closeCommentOptions = () => {
         setAnchorEl(false);
     };
-
     return (
         <div>
             {
@@ -106,13 +105,14 @@ function PhotoComment(props) {
                                                 <List sx={{ padding: 0.5, width: '22rem', fontWeight: 'bold' }}>
                                                     <ListItem sx={{ padding: 0 }} >
                                                         <ListItemButton
-                                                            onClick={() => dispatch({ type: 'toggleEdit', commentId })}>
+                                                            onClick={() => { dispatch({ type: 'toggleEdit', commentId }); closeCommentOptions() }}>
                                                             <ListItemText primary="Edit" />
                                                         </ListItemButton>
                                                     </ListItem>
                                                     <ListItem sx={{ padding: 0 }}>
                                                         <ListItemButton
-                                                            onClick={() => dispatch({ type: 'deleteComment', commentId })}>
+                                                            onClick={() => { dispatch({ type: 'deleteComment', commentId }); closeCommentOptions() }}
+                                                        >
                                                             <ListItemText primary='Delete' />
                                                         </ListItemButton>
                                                     </ListItem>

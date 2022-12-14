@@ -107,7 +107,8 @@ function useAllMethodsState() {
                     return file
                 });
                 const [result] = fileContent.likes.filter(like => {
-                    if (like.title === title) return like
+                    if (like.title === title) return like;
+                    return null;
                 })
                 /** Made a single isTrue key to true  */
                 const finalPostedImage = updatedPostedImage.map(file => {
